@@ -1,0 +1,7 @@
+pasta_arquivos/
+venv/
+__pycache__/
+nota.pdf
+pacotes_instalados.txt
+teste.pdf
+poppler-25.07.0/
