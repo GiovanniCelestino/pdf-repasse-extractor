@@ -15,4 +15,6 @@ def read_img(name_img):
     #pedir pro tesseract extrair o texto da imagem
     texto = pytesseract.image_to_string(imagem, lang="por")
 
-    print(texto)
+    #print(texto)
+
+    return texto

@@ -10,6 +10,10 @@ from boleto_para_imagem import transform_img
 from teste_leitura_imagem import read_img
 
 
+
+
+
+
 #EXTRAI VALORES DA NOTA FISCAL
 def extrai_valor_nota(nome_arquivo_pdf):  #CORRIGIR CAMINHO:
     #caminho_pdf = rf"C:\Users\Giovanni\Desktop\HAPVIDA\NOTA FISCAL\{nome_arquivo_pdf}.pdf"
@@ -62,6 +66,7 @@ def extrai_valor_nota(nome_arquivo_pdf):  #CORRIGIR CAMINHO:
                     data_hr_emis = linhas[i + 1].strip()
                     data_emis = data_hr_emis[:10]
                     
+                    
                         
 
     
@@ -79,10 +84,25 @@ def extrai_texto_boleto(nome_arquivo_pdf):
     transform_img(nome_pdf)
 
     #realiza leitura da imagem
-    read_img('boleto_img.jpg')
-    
+    texto_gerado = read_img('boleto_img.jpg')
+
+    linhas = texto_gerado.split('\n')
+
+    for i, linha in enumerate(linhas):
+    # Verifica se a linha contém uma das expressões
+        if ": HAPVIDA ASSISTENCIA MEDICA LTDA" in linha or ": CENTRO CLINICO" in linha:
+            if i + 2 < len(linhas):
+                linha_boleto_digitavel = linhas[i + 2].strip()
+
+                # Extrai todos os números (incluindo decimais)
+                numeros = re.findall(r'\d+', linha_boleto_digitavel)
+
+                # Junta todos os números em uma única string
+                resultado_boleto_digt = ''.join(numeros)
+
+                print(resultado_boleto_digt)
 
 
 #Chamada de função
-extrai_valor_nota('arquivo.pdf')
+extrai_valor_nota('pasta_arquivos/arquivo.pdf')
 extrai_texto_boleto('teste.pdf')
