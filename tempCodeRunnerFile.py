@@ -1,1 +1,1 @@
-teste1.jpeg
+pyautogui.press('down')

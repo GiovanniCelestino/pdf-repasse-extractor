@@ -5,22 +5,19 @@ import pytesseract
 from PIL import Image
 import io
 import os
+import pyautogui
+import time
 
 #ARQUIVOS
 from boleto_para_imagem import transform_img
 from teste_leitura_imagem import read_img
-from busca_cont_apsdu import 
-
-
-
-
+from busca_cont_apsdu import buscarContrato, preencheDados_nota, preencheDados_boleto, nomeArq, CNPJ
 
 
 
 #EXTRAI VALORES DA NOTA FISCAL
 def extrai_valor_nota(nome_arquivo_pdf):  #CORRIGIR CAMINHO:
     #caminho_pdf = rf"C:\Users\Giovanni\Desktop\HAPVIDA\NOTA FISCAL\{nome_arquivo_pdf}.pdf"
-
     #doc = fitz.open(caminho_pdf)
     doc_nota_fiscal = fitz.open(nome_arquivo_pdf)
     
@@ -102,7 +99,7 @@ def extrai_valor_nota(nome_arquivo_pdf):  #CORRIGIR CAMINHO:
     
         print(f'DADOS NOTA FISCAL:\nValor:R${valor}\nNúmero Nota:{list_num_nota[1]}\nData Emissão:{data_emis}\n'\
               f'CNPJ Tomador:{result_cnpj_tomador}\nCNPJ Prestador:{result_cnpj_prestador}\n')
-        #return valor, list_num_nota[1], data_emis, result_cnpj_tomador, result_cnpj_prestador         
+        return valor, list_num_nota[1], data_emis, result_cnpj_tomador, result_cnpj_prestador         
 
     doc_nota_fiscal.close()
 
@@ -111,18 +108,23 @@ def extrai_valor_nota(nome_arquivo_pdf):  #CORRIGIR CAMINHO:
 def extrai_texto_boleto(nome_arquivo_pdf):
     nome_pdf = nome_arquivo_pdf
 
+    resultado_boleto_digt = ''
+    resultado_nosso_num = ''
+
+
     #transforma pdf para imagem
     transform_img(nome_pdf)
 
     #realiza leitura da imagem
     texto_gerado = read_img('boleto_img.jpg')
-
+    print(texto_gerado)
     linhas = texto_gerado.split('\n')
+    
 
     for i, linha in enumerate(linhas):
     # Verifica se a linha contém uma das expressões
         #EXTRAI LINHA DIGITAVEL BOLETO
-        if ": HAPVIDA ASSISTENCIA MEDICA LTDA" in linha or ": CENTRO CLINICO" in linha:
+        if ": HAPVIDA ASSISTENCIA MEDICA LTDA" in linha or ": CENTRO CLINICO" in linha or "I Autenticação Mecânica I" in linha:
             if i + 2 < len(linhas):
                 linha_boleto_digitavel = linhas[i + 2].strip()
 
@@ -147,9 +149,7 @@ def extrai_texto_boleto(nome_arquivo_pdf):
 
 
     print(f'DADOS BOLETO:\nLinha Digitavel:{resultado_boleto_digt}\nNosso Número:{resultado_nosso_num}')
-    #return resultado_boleto_digt, resultado_nosso_num
-
-
+    return resultado_boleto_digt, resultado_nosso_num
 
 
 
@@ -159,27 +159,39 @@ while True:
     list_nota = os.listdir('arquivos/notas_fiscais')
     list_boleto = os.listdir('arquivos/boletos')
     
-    receber_nome = input('Digite o nome do arquivo')
-
+    #receber_nome = input('Digite o nome do arquivo')
+  
+    numContrato = buscarContrato()
     for nome_nota in list_nota:
-        if receber_nome in nome_nota:
+        
+        if numContrato in nome_nota:
+            
             for nome_boleto in list_boleto:
-                if receber_nome in nome_boleto:
-                    print(f'Contrato {receber_nome} processando!!')
+                if numContrato in nome_boleto:
+                    print(f'Contrato {numContrato} processando!!')
                     #Chamada de função
-                    
                     extrai_valor_nota(f'arquivos/notas_fiscais/{nome_nota}')
                     extrai_texto_boleto(f'arquivos/boletos/{nome_boleto}')
+                    
+                    #Retorna dados nota
+                    valor, numero_nota, data_emissao, cnpj_tomador, cnpj_prestador = extrai_valor_nota(f'arquivos/notas_fiscais/{nome_nota}')
+                    preencheDados_nota(valor, numero_nota, data_emissao, cnpj_tomador, cnpj_prestador)
+                    
+                    #Retorna dados boleto
+                    resultado_boleto_digt, resultado_nosso_num = extrai_texto_boleto(f'arquivos/boletos/{nome_boleto}')
+                    preencheDados_boleto(resultado_boleto_digt, resultado_nosso_num)
+
+                    #Retorna dados nome arquivo
+                    nomeArq(nome_nota)
+
+                    #Retorna CNPJ:
+                    CNPJ(cnpj_tomador, cnpj_prestador)
+
+
+
+               
         else:
-            continue
-
-
-    
-'''
-PRÓXIMOS PASSOS:
--Criar pasta para nota fiscal e boleto [OK]
--Coletar código no APSDU (criar arquivo separado e importar no 'principal')
--Fazer uma verificação se o código existe em ambas as pastas. Caso existir, chamar função do boleto e nota.[OK]
--Ajustar arquivo do main.py
-
-'''
+            print(f'Contrato {numContrato} não encontrado')
+            pyautogui.press('down')
+            time.sleep(1)
+            
