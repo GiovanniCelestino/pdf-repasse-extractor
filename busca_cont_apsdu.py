@@ -4,12 +4,12 @@ import keyboard
 import re
 import pyperclip
 #from main import extrai_valor_nota, extrai_texto_boleto
-data_vencimento = '30/10/2025'
+data_vencimento = '25/10/2025'
 
 def buscarContrato():
     #APSDU: Acessa primeiro item da fila ZZR_CONT
     #pyautogui.click(x=367, y=226)
-    time.sleep(4) 
+    time.sleep(1) 
 
     #Copia número do contrato
     pyautogui.hotkey('ctrl', 'c')
@@ -60,16 +60,18 @@ def preencheDados_nota(valor, numero_nota, data_emissao, cnpj_tomador, cnpj_pres
   contador_right(1)
   colar_info()
 
-  #DATA VENCIMENTO
-  num_venc = 0
-  while num_venc < 2:
-    pyperclip.copy(data_vencimento)
-    contador_right(1)
-    colar_info()
-    num_venc +=1
+  #DATA VENCIMENTO X
+  pyperclip.copy(data_vencimento)
+  contador_right(1)
+  colar_info()
+  time.sleep(1)
 
-  CNPJ(cnpj_tomador, cnpj_prestador)
-
+  
+  #DATA VENCIMENTO Y
+  pyperclip.copy(data_vencimento)
+  contador_right(1)
+  colar_info()
+  time.sleep(1)
 
   
 
@@ -78,12 +80,15 @@ def preencheDados_boleto(resultado_boleto_digt, resultado_nosso_num):
    pyperclip.copy(resultado_boleto_digt)
    contador_right(4)
    colar_info()
+   time.sleep(1)
 
    #NOSSO NUMERO BOLETO
    pyperclip.copy(resultado_nosso_num)
    contador_right(1)
    colar_info()
+   time.sleep(1)
    pyautogui.press('enter')
+   time.sleep(1)
 
    
 
@@ -93,28 +98,37 @@ def nomeArq(receber_nome):
    pyperclip.copy(receber_nome)
    contador_right(6)
    colar_info()
+   time.sleep(1)
    contador_right(1)
 
    colar_info()
+   time.sleep(1)
    contador_right(1)
 
    colar_info()
+   time.sleep(1)
    contador_right(1)
 
 def CNPJ(cnpj_tomador, cnpj_prestador):
     #CNPJ TOMADOR:
+    time.sleep(1)
     pyperclip.copy(cnpj_tomador)
     colar_info()
+    time.sleep(1)
     contador_right(1)
 
     #CNPJ PRESTADOR:
+    time.sleep(1)
     pyperclip.copy(cnpj_prestador)
     colar_info()
+    time.sleep(1)
     contador_right(2)    
 
     #ATUALIZAR STATUS
     pyperclip.copy('P')
+    time.sleep(1)
     colar_info()
+    time.sleep(1)
     
     #RETORNA COMEÇO
     contador_left(30)

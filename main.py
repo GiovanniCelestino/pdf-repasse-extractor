@@ -152,46 +152,54 @@ def extrai_texto_boleto(nome_arquivo_pdf):
     return resultado_boleto_digt, resultado_nosso_num
 
 
+list_nota = os.listdir('arquivos/notas_fiscais')
+list_boleto = os.listdir('arquivos/boletos')
 
-
+time.sleep(4)
 while True:
-    #Coletar arquivo na pasta:
-    list_nota = os.listdir('arquivos/notas_fiscais')
-    list_boleto = os.listdir('arquivos/boletos')
-    
-    #receber_nome = input('Digite o nome do arquivo')
-  
     numContrato = buscarContrato()
+    encontrou_nota = False
+    encontrou_boleto = False
+
     for nome_nota in list_nota:
-        
         if numContrato in nome_nota:
-            
+            print(f'Nota encontrada: {nome_nota}')
+            encontrou_nota = True
+
             for nome_boleto in list_boleto:
                 if numContrato in nome_boleto:
+                    print(f'Boleto encontrado: {nome_boleto}')
+                    encontrou_boleto = True
+
                     print(f'Contrato {numContrato} processando!!')
-                    #Chamada de função
-                    extrai_valor_nota(f'arquivos/notas_fiscais/{nome_nota}')
-                    extrai_texto_boleto(f'arquivos/boletos/{nome_boleto}')
-                    
-                    #Retorna dados nota
+
+                    # Processa nota
                     valor, numero_nota, data_emissao, cnpj_tomador, cnpj_prestador = extrai_valor_nota(f'arquivos/notas_fiscais/{nome_nota}')
                     preencheDados_nota(valor, numero_nota, data_emissao, cnpj_tomador, cnpj_prestador)
-                    
-                    #Retorna dados boleto
+
+                    # Processa boleto
                     resultado_boleto_digt, resultado_nosso_num = extrai_texto_boleto(f'arquivos/boletos/{nome_boleto}')
                     preencheDados_boleto(resultado_boleto_digt, resultado_nosso_num)
 
-                    #Retorna dados nome arquivo
+                    # Outros dados
                     nomeArq(nome_nota)
-
-                    #Retorna CNPJ:
                     CNPJ(cnpj_tomador, cnpj_prestador)
 
+                    break  # Sai do for de boletos
+
+            break  # Sai do for de notas
+
+    if not encontrou_nota:
+        print(f'Contrato {numContrato} não encontrado na nota')
+        pyautogui.press('down')
+        time.sleep(1)
+    if not encontrou_boleto:
+        print(f'Contrato {numContrato} não encontrado no boleto')
+        pyautogui.press('down')
+        time.sleep(1)
 
 
-               
-        else:
-            print(f'Contrato {numContrato} não encontrado')
-            pyautogui.press('down')
-            time.sleep(1)
+    
+    
+
             
