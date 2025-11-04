@@ -7,6 +7,7 @@ import io
 import os
 import pyautogui
 import time
+import pyperclip
 
 #ARQUIVOS
 from boleto_para_imagem import transform_img
@@ -117,7 +118,6 @@ def extrai_texto_boleto(nome_arquivo_pdf):
 
     #realiza leitura da imagem
     texto_gerado = read_img('boleto_img.jpg')
-    print(texto_gerado)
     linhas = texto_gerado.split('\n')
     
 
@@ -151,7 +151,10 @@ def extrai_texto_boleto(nome_arquivo_pdf):
     print(f'DADOS BOLETO:\nLinha Digitavel:{resultado_boleto_digt}\nNosso Número:{resultado_nosso_num}')
     return resultado_boleto_digt, resultado_nosso_num
 
+   
 
+
+input('Vencimento e Contrato atualizado?')
 list_nota = os.listdir('arquivos/notas_fiscais')
 list_boleto = os.listdir('arquivos/boletos')
 

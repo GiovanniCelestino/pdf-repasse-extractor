@@ -1,1 +1,1 @@
-pyautogui.press('down')
+time.sleep(4)
