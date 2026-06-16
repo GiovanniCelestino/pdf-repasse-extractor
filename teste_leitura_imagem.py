@@ -12,6 +12,7 @@ def read_img(name_img):
     #executa o aplicativo tesseract.exe
     pytesseract.pytesseract.tesseract_cmd = caminho + r"\tesseract.exe"
 
+
     #pedir pro tesseract extrair o texto da imagem
     texto = pytesseract.image_to_string(imagem, lang="por")
 

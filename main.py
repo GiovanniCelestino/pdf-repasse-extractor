@@ -8,11 +8,13 @@ import os
 import pyautogui
 import time
 import pyperclip
+import sys
 
 #ARQUIVOS
 from boleto_para_imagem import transform_img
 from teste_leitura_imagem import read_img
 from busca_cont_apsdu import buscarContrato, preencheDados_nota, preencheDados_boleto, nomeArq, CNPJ
+from leitor_imagem2 import leitor_pdf_provisorio
 
 
 
@@ -22,7 +24,6 @@ def extrai_valor_nota(nome_arquivo_pdf):  #CORRIGIR CAMINHO:
     #doc = fitz.open(caminho_pdf)
     doc_nota_fiscal = fitz.open(nome_arquivo_pdf)
     
-
     #Lista do numero da nota
     list_num_nota = []
 
@@ -118,13 +119,16 @@ def extrai_texto_boleto(nome_arquivo_pdf):
 
     #realiza leitura da imagem
     texto_gerado = read_img('boleto_img.jpg')
+    print(texto_gerado)
     linhas = texto_gerado.split('\n')
     
 
     for i, linha in enumerate(linhas):
     # Verifica se a linha contém uma das expressões
         #EXTRAI LINHA DIGITAVEL BOLETO
-        if ": HAPVIDA ASSISTENCIA MEDICA LTDA" in linha or ": CENTRO CLINICO" in linha or "I Autenticação Mecânica I" in linha:
+        if "FICHA DO CAIXA" in linha or "Sacador / Avalista: HAPVIDA ASSISTENCIA MEDICA LTDA" in linha or "Cód, Tran" in linha or ": HAPVIDA ASSISTENCIA MEDICA LTDA - CNPJ" in linha or "T Autenticação Mecânica T" in linha or "Sacador" in linha or ": HAPVIDA ASSISTENCIA MEDICA LTDA -" in linha or "utenticação Mecânica" in linha or "Avalista:" in linha or "Local de Pagamento PAGAR" in linha or "https://webhap.hapvida.com.br/pls/webhap/webNewBoletoEmpresa.boleto" in linha or "webhap.hapvida.com.br/pls/webhap" in linha or "Pagador Autenticação Mecânica" in linha or "Centro Fortaleza - Ceara" in linha or "DOR" in linha:# or "CVT" in linha:
+            #or "T Autenticação Mecânica T" in linha or ": CENTRO CLINICO" in linha or "I Autenticação Mecânica I" in linha or ": CLINIPAM CLIN" in linha  or "hapvida.com.br/pls" in linha  or "Sacador / Avalista: NOTRE DAME" in linha
+
             if i + 2 < len(linhas):
                 linha_boleto_digitavel = linhas[i + 2].strip()
 
@@ -132,7 +136,13 @@ def extrai_texto_boleto(nome_arquivo_pdf):
                 numeros = re.findall(r'\d+', linha_boleto_digitavel)
 
                 # Junta todos os números em uma única string
-                resultado_boleto_digt = ''.join(numeros)
+                resultado_boleto = ''.join(numeros)
+                if len(resultado_boleto) > 40:
+                    resultado_boleto_digt = resultado_boleto
+                    break
+                
+                
+
 
         #EXTRAI 'NOSSO NUMERO' BOLETO
         if "Nosso Número" in linha:
@@ -146,9 +156,15 @@ def extrai_texto_boleto(nome_arquivo_pdf):
                 # Junta todos os números em uma única string
                 resultado_nosso_num = ''.join(numeros)
 
+    """if not resultado_boleto_digt:
+        resultado_boleto_digt = leitor_pdf_provisorio(nome_pdf)"""
 
-
+    if len(resultado_boleto_digt) < 40:
+            print("Número do boleto não encontrado")
+            sys.exit()
+    
     print(f'DADOS BOLETO:\nLinha Digitavel:{resultado_boleto_digt}\nNosso Número:{resultado_nosso_num}')
+
     return resultado_boleto_digt, resultado_nosso_num
 
    
@@ -192,14 +208,14 @@ while True:
 
             break  # Sai do for de notas
 
-    if not encontrou_nota:
+    if not encontrou_nota or not encontrou_boleto:
         print(f'Contrato {numContrato} não encontrado na nota')
         pyautogui.press('down')
         time.sleep(1)
-    if not encontrou_boleto:
+    """if not encontrou_boleto:
         print(f'Contrato {numContrato} não encontrado no boleto')
         pyautogui.press('down')
-        time.sleep(1)
+        time.sleep(1)"""
 
 
     

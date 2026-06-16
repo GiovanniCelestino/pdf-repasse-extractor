@@ -4,9 +4,7 @@ import keyboard
 import re
 import pyperclip
 #from main import extrai_valor_nota, extrai_texto_boleto
-data_vencimento = '30/10/2025'
-
-
+data_vencimento = '15/06/2026'
 
 
 
@@ -19,16 +17,16 @@ def verificaValorCampo():
 
 def arquivoRecebido():
    cont = 0
-   while cont != 3:
+   while cont != 4:
         
         valor_do_campo = verificaValorCampo()
         if valor_do_campo != 'S':
             pyperclip.copy('S')
             colar_info()
             time.sleep(1)
+        time.sleep(1)
         pyautogui.press('right')
         time.sleep(1)
-        
         cont +=1 
 
 
@@ -73,13 +71,15 @@ def preencheDados_nota(valor, numero_nota, data_emissao, cnpj_tomador, cnpj_pres
   contador_right(3)
   arquivoRecebido()
   #NUMERO NOTA
-  contador_right(2)
+  contador_right(1)
   valor_do_campo = verificaValorCampo()
   if valor_do_campo == '':
-        if len(numero_nota) == 6:
+        if len(numero_nota) == 7:
+          pyperclip.copy(f'00{numero_nota}')
+        elif len(numero_nota) == 6:
           pyperclip.copy(f'000{numero_nota}')
-        else:
-          pyperclip.copy(f'0{numero_nota}')
+        elif len(numero_nota) == 8:
+           pyperclip.copy(f'0{numero_nota}')
         colar_info()
 
   #VALOR NOTA
@@ -91,8 +91,9 @@ def preencheDados_nota(valor, numero_nota, data_emissao, cnpj_tomador, cnpj_pres
 
   #DATA EMISSAO
   contador_right(1)
+  time.sleep(0.5)
   valor_do_campo = verificaValorCampo()
-  if valor_do_campo == '/ /':
+  if valor_do_campo == '/  /':
       pyperclip.copy(data_emissao)
       colar_info()
 
@@ -119,6 +120,7 @@ def preencheDados_boleto(resultado_boleto_digt, resultado_nosso_num):
 
    #NUMERO DIGITAVEL BOLETO
    contador_right(4)
+   time.sleep(1)
    valor_do_campo = verificaValorCampo()
    if valor_do_campo == '':
       pyperclip.copy(resultado_boleto_digt)
@@ -138,7 +140,7 @@ def preencheDados_boleto(resultado_boleto_digt, resultado_nosso_num):
 
 def nomeArq(receber_nome):
    #NOME ARQUIVO
-   
+   pass
    contador_right(6)
    valor_do_campo = verificaValorCampo()
    if valor_do_campo == '':
@@ -162,6 +164,7 @@ def nomeArq(receber_nome):
    contador_right(1)
 
 def CNPJ(cnpj_tomador, cnpj_prestador):
+    pass
     #CNPJ TOMADOR:
     time.sleep(1)
     valor_do_campo = verificaValorCampo()
@@ -178,7 +181,7 @@ def CNPJ(cnpj_tomador, cnpj_prestador):
       pyperclip.copy(cnpj_prestador)
       colar_info()
       time.sleep(1)
-    contador_right(2)    
+    contador_right(2)
 
     #ATUALIZAR STATUS
     pyperclip.copy('P')
@@ -187,9 +190,9 @@ def CNPJ(cnpj_tomador, cnpj_prestador):
     time.sleep(1)
     
     #RETORNA COMEÇO
-    contador_left(30)
+    contador_left(29)
     pyautogui.press('down')
-    contador_right(1)
+    #contador_right(1)
 
 
 
